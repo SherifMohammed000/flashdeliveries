@@ -1,5 +1,5 @@
 
-export const MAPBOX_TOKEN = 'pk.eyJ1IjoiZmxhc2gwMDAiLCJhIjoiY21tbTB0b3h4MXV3bzJwczhzbmJodmVtcCJ9.QbdM82Xcl2L9xMMjV6tUJQ';
+export const MAPBOX_TOKEN = "YOUR_MAPBOX_TOKEN";
 
 export const reverseGeocode = async (lat: number, lng: number) => {
     try {
@@ -37,7 +37,7 @@ export const searchPlace = async (query: string, proximity?: [number, number]) =
     if (!query) return [];
     try {
         let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=10&country=GH&types=address,poi,neighborhood,place`;
-        
+
         if (proximity) {
             url += `&proximity=${proximity[0]},${proximity[1]}`;
         }
