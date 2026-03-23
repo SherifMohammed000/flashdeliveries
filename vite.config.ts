@@ -8,11 +8,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Enable service worker in dev mode so beforeinstallprompt fires
       devOptions: {
         enabled: true,
         type: 'module'
       },
+
       // Disable precache glob scanning — avoids the "dev-dist does not exist" warning.
       // The service worker still works; it just won't pre-cache assets in dev mode.
       workbox: {
@@ -46,6 +46,7 @@ export default defineConfig({
           }
         ]
       }
-    })
+    }),
   ],
+  base: './',
 })
