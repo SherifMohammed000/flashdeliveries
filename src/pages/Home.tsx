@@ -389,17 +389,30 @@ const Home = () => {
                             exit={{ opacity: 0, y: 100 }}
                             className="order-modal-backdrop"
                         >
-                            <div className="order-modal glass">
-                                <button className="close-btn" onClick={() => {
-                                    setActiveTab(null);
-                                    setDeliverySubtype(null);
-                                }}><X /></button>
+                            <div className="order-modal glass" style={{ overflow: 'hidden', padding: 0 }}>
+                                <div className="order-modal-header">
+                                    <div className="order-modal-image-wrap">
+                                        <img 
+                                            src={activeTab === 'gas' ? '/images/gas-vibrant.png' : 
+                                                 deliverySubtype === 'food' ? '/images/food-vibrant.png' : '/images/package-vibrant.png'} 
+                                            alt="Service Header" 
+                                            className="order-modal-header-img" 
+                                        />
+                                        <div className="order-modal-overlay" />
+                                        <div className="order-modal-title-overlay">
+                                            <h3>
+                                                {activeTab === 'gas' ? 'Gas Refill' : 
+                                                 deliverySubtype === 'food' ? 'Food Delivery' : 'Package Delivery'}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <button className="close-btn-alt" onClick={() => {
+                                        setActiveTab(null);
+                                        setDeliverySubtype(null);
+                                    }}><X /></button>
+                                </div>
 
-                                <div className="order-form-container">
-                                    <h3>
-                                        {activeTab === 'gas' ? 'Gas Refill Order' : 
-                                         deliverySubtype === 'food' ? 'Food Delivery Order' : 'Package Delivery Order'}
-                                    </h3>
+                                <div className="order-form-container" style={{ padding: '1.5rem' }}>
                                     <form onSubmit={handleSubmitOrder}>
                                         <div className="form-group-row">
                                             <div className="form-group">
