@@ -168,8 +168,9 @@ export const notifyStatusUpdate = async (orderData: any, newStatus: string) => {
     ];
 
     if (newStatus === 'Cancelled') {
+        const cancelSubject = `🚨 URGENT: ORDER CANCELLED #${orderData.id.slice(-6).toUpperCase()}`;
         notifications.push(sendSMSNotification(adminPhone, adminMessage));
-        notifications.push(sendEmailNotification(adminEmail, "ORDER CANCELLED", adminMessage));
+        notifications.push(sendEmailNotification(adminEmail, cancelSubject, adminMessage));
     }
 
     if (orderData.customerEmail) {
@@ -180,5 +181,27 @@ export const notifyStatusUpdate = async (orderData: any, newStatus: string) => {
         await Promise.allSettled(notifications);
     } catch (e) {
         console.error("Status update notifications failed:", e);
+    }
+};
+
+export const notifyFeedbackSubmitted = async (orderId: string, rating: number, comment: string) => {
+    const adminEmail = "flashdeliveries20@gmail.com";
+    const adminPhone = "233557138306";
+    
+    const shortId = orderId.slice(-6).toUpperCase();
+    const adminMessage = `Flash FEEDBACK #${shortId}: ${rating}/5 Stars. Comment: "${comment || 'No comment'}"`.substring(0, 160);
+    
+    const subject = `NEW FEEDBACK - Order #${shortId}`;
+    const body = `Customer provided a ${rating}/5 star rating for order #${shortId}.\n\nComment: ${comment || 'No comment provided.'}`;
+
+    const notifications = [
+        sendEmailNotification(adminEmail, subject, body),
+        sendSMSNotification(adminPhone, adminMessage)
+    ];
+
+    try {
+        await Promise.allSettled(notifications);
+    } catch (e) {
+        console.error("Feedback notifications failed:", e);
     }
 };

@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
 import { collection, query, where, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { Zap, Clock, Package, XCircle, LogOut, User as UserIcon, Loader2, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Zap, Clock, Package, XCircle, LogOut, User as UserIcon, Loader2, ArrowLeft, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import RatingSystem from '../components/RatingSystem';
 import { notifyStatusUpdate } from '../services/notifications';
 
 const Orders = () => {
@@ -43,18 +44,22 @@ const Orders = () => {
             if (user) {
                 if (checkAuthPersistence()) return;
                 setUser(user);
-                // Fetch orders for this user
+                // Simplified query to avoid index issues
                 const q = query(
                     collection(db, 'orders'),
-                    where('customerId', '==', user.uid),
-                    orderBy('timestamp', 'desc')
+                    where('customerId', '==', user.uid)
                 );
 
                 const unsubscribeOrders = onSnapshot(q, (snapshot) => {
                     const orderData: any[] = [];
                     snapshot.forEach((doc) => {
-                        orderData.push({ id: doc.id, ...doc.data() });
+                        // Ensure the Firestore doc ID (doc.id) is the one we use, NOT the field named 'id'
+                        orderData.push({ ...doc.data(), id: doc.id });
                     });
+                    
+                    // Sort in memory instead of Firestore to bypass composite index requirement
+                    orderData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+                    
                     setOrders(orderData);
                     setLoading(false);
                 }, (err) => {
@@ -72,22 +77,34 @@ const Orders = () => {
     }, [navigate]);
 
     const handleCancelOrder = async (order: any) => {
+        if (!order || !order.id) {
+            alert("Error: Order reference is missing.");
+            return;
+        }
+
         if (!window.confirm('Are you sure you want to cancel this order?')) return;
 
         try {
+            const currentUserId = auth.currentUser?.uid;
+            console.log("DIAGNOSTIC - User ID:", currentUserId);
+            console.log("DIAGNOSTIC - Order ID:", order.id);
+            console.log("DIAGNOSTIC - Order customerId:", order.customerId);
+
             const orderRef = doc(db, 'orders', order.id);
             await updateDoc(orderRef, {
                 status: 'Cancelled'
             });
 
-            // Notify both customer and admin (notifyStatusUpdate already sends to customer, 
-            // but we might need to ensure admin is notified if they aren't listening real-time)
-            // Admin is usually listening in Admin.tsx
             await notifyStatusUpdate(order, 'Cancelled');
             alert('Order cancelled successfully.');
-        } catch (error) {
-            console.error("Error cancelling order:", error);
-            alert("Failed to cancel order.");
+        } catch (error: any) {
+            console.error("Cancellation Technical Details:", error);
+            // Help the user identify if it's a security rule issue
+            if (error.code === 'permission-denied') {
+                alert("Security Error: You don't have permission to cancel this order. Please check your account or contact support.");
+            } else {
+                alert(`Failed to cancel order: ${error.message || 'Unknown error'}`);
+            }
         }
     };
 
@@ -212,6 +229,34 @@ const Orders = () => {
                                         </button>
                                     )}
                                 </div>
+
+                                <AnimatePresence>
+                                    {order.status === 'Completed' && !order.rating && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="order-rating-inline"
+                                            style={{ width: '100%', marginTop: '1rem' }}
+                                        >
+                                            <RatingSystem orderId={order.id} />
+                                        </motion.div>
+                                    )}
+
+                                    {order.rating && (
+                                        <div className="order-rating-display" style={{ width: '100%', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ display: 'flex', gap: '4px', color: '#f59e0b' }}>
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} size={16} fill={i < order.rating ? 'currentColor' : 'none'} />
+                                                ))}
+                                            </div>
+                                            {order.customerComment && (
+                                                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                                                    "{order.customerComment}"
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </AnimatePresence>
                             </motion.div>
                         ))
                     )}

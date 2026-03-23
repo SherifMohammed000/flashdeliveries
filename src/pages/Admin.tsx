@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff } from 'lucide-react';
+import { Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff, Package, Phone as PhoneIcon, User as UserIcon, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 import { notifyStatusUpdate } from '../services/notifications';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Star } from 'lucide-react';
 
 const Admin = () => {
     const navigate = useNavigate();
@@ -19,6 +20,8 @@ const Admin = () => {
     const [orders, setOrders] = useState<any[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
     const lastOrderIdRef = React.useRef<string | null>(null);
+    const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+    const [customerOrders, setCustomerOrders] = useState<any[]>([]);
 
     // Request permission for sound/notifications on login
     useEffect(() => {
@@ -149,6 +152,12 @@ const Admin = () => {
         return orders.filter(o => o.customerId === customerId).length;
     };
 
+    const viewCustomerOrders = (customer: any) => {
+        const history = orders.filter(o => o.customerId === customer.uid || o.customerId === customer.id);
+        setCustomerOrders(history);
+        setSelectedCustomer(customer);
+    };
+
     const loadOrders = () => {
         // Now handled by real-time listener
         console.log("Orders refresh triggered, but already using real-time listener.");
@@ -195,6 +204,15 @@ const Admin = () => {
             console.error("Error updating order: ", error);
             alert("Failed to update status.");
         }
+    };
+
+    const copyTrackingLink = (orderId: string) => {
+        const link = `${window.location.origin}/tracking/${orderId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            alert("Tracking link copied to clipboard!");
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
     };
 
     const clearOrders = async () => {
@@ -321,8 +339,8 @@ const Admin = () => {
                                         <th>Ref/Time</th>
                                         <th>Customer</th>
                                         <th>Service</th>
-                                        <th>Payment</th>
-                                        <th>Status</th>
+                                        <th>Feedback</th>
+                                        <th>Payment/Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -345,7 +363,10 @@ const Admin = () => {
                                                     <div className="order-location" style={{ fontSize: '0.8rem' }}>{order.location}</div>
                                                 </td>
                                                 <td>
-                                                    <span className="service-type">{order.type === 'gas' ? 'Gas Refill' : 'Delivery'}</span>
+                                                    <span className="service-type">
+                                                        {order.type === 'gas' ? 'Gas Refill' : 
+                                                         order.subtype === 'food' ? 'Delivery (Food)' : 'Delivery (Package)'}
+                                                    </span>
                                                     <div className="order-details" style={{ fontSize: '0.8rem', color: '#666' }}>
                                                         {order.type === 'gas' && order.gasAmount && (
                                                             <div style={{ fontWeight: 'bold', color: '#e63946', marginTop: '2px' }}>Amount: GHS {order.gasAmount}</div>
@@ -353,28 +374,46 @@ const Admin = () => {
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div className="payment-info">GHS {order?.total || 0}</div>
-                                                    <span className={`status-badge ${(order?.paymentStatus || 'Pending').toLowerCase()}`}>{order?.paymentStatus || 'Pending'}</span>
+                                                    {order.rating ? (
+                                                        <div className="feedback-preview">
+                                                            <div style={{ display: 'flex', gap: '2px', color: '#f59e0b', marginBottom: '4px' }}>
+                                                                {[...Array(5)].map((_, i) => (
+                                                                    <Star key={i} size={12} fill={i < order.rating ? 'currentColor' : 'none'} />
+                                                                ))}
+                                                            </div>
+                                                            {order.customerComment && (
+                                                                <div style={{ fontSize: '0.75rem', color: '#666', fontStyle: 'italic', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={order.customerComment}>
+                                                                    "{order.customerComment}"
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <span style={{ fontSize: '0.8rem', color: '#ccc' }}>No rating yet</span>
+                                                    )}
                                                 </td>
                                                 <td>
+                                                    <div className="payment-info" style={{ fontWeight: '600' }}>GHS {order?.total || 0}</div>
                                                     <select
                                                         className={`status-select ${(order?.status || 'Pending').toLowerCase().replace(' ', '-')}`}
                                                         value={order?.status || 'Pending'}
                                                         onChange={(e) => updateOrderStatus(order, e.target.value)}
+                                                        style={{ marginTop: '5px', width: '100%', fontSize: '0.8rem' }}
                                                     >
                                                         <option value="Pending">Pending</option>
-
                                                         <option value="Completed">Completed</option>
                                                         <option value="Cancelled">Cancelled</option>
                                                     </select>
                                                 </td>
                                                 <td>
                                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                        <a href={`https://wa.me/${order.customerPhone.replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary sm" style={{ width: '100%', textAlign: 'center' }}>
+                                                        <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary sm" style={{ width: '100%', textAlign: 'center', fontSize: '0.75rem' }}>
                                                             WhatsApp
                                                         </a>
-                                                        <button onClick={() => navigate('/tracking/' + order.id)} className="btn btn-outline sm" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                                                            <Map size={14} /> Map
+                                                        <button onClick={() => copyTrackingLink(order.id)} className="btn btn-outline sm" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.75rem' }}>
+                                                            <Copy size={12} /> Link
+                                                        </button>
+                                                        <button onClick={() => navigate('/tracking/' + order.id)} className="btn btn-ghost sm" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.75rem' }}>
+                                                            <Map size={12} /> Map
                                                         </button>
                                                     </div>
                                                 </td>
@@ -411,7 +450,13 @@ const Admin = () => {
                                         customers.map(customer => (
                                             <tr key={customer.id}>
                                                 <td>
-                                                    <div style={{ fontWeight: 'bold' }}>{customer.name || 'Anonymous'}</div>
+                                                    <div 
+                                                        style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary)' }} 
+                                                        onClick={() => viewCustomerOrders(customer)}
+                                                        title="Click to view order history"
+                                                    >
+                                                        {customer.name || 'Anonymous'} <Eye size={12} style={{ display: 'inline', marginLeft: '4px' }} />
+                                                    </div>
                                                     <div style={{ fontSize: '0.75rem', color: '#888' }}>ID: {customer.id.slice(0, 8)}...</div>
                                                 </td>
                                                 <td>
@@ -422,9 +467,13 @@ const Admin = () => {
                                                     {customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : 'N/A'}
                                                 </td>
                                                 <td>
-                                                    <div className="badge" style={{ background: 'var(--primary)', color: 'white', padding: '2px 8px', borderRadius: '12px', display: 'inline-block', fontWeight: 'bold' }}>
-                                                        {getCustomerOrderCount(customer.uid || customer.id)}
-                                                    </div>
+                                                    <button 
+                                                        className="badge-btn"
+                                                        onClick={() => viewCustomerOrders(customer)}
+                                                        style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+                                                    >
+                                                        {getCustomerOrderCount(customer.uid || customer.id)} Orders
+                                                    </button>
                                                 </td>
                                                 <td>
                                                     <span className={`status-badge ${customer.role === 'admin' ? 'completed' : 'pending'}`}>
@@ -439,6 +488,64 @@ const Admin = () => {
                         </div>
                     </section>
                 )}
+
+                {/* Customer Orders Modal */}
+                <AnimatePresence>
+                    {selectedCustomer && (
+                        <div className="order-modal-backdrop" onClick={() => setSelectedCustomer(null)}>
+                            <div className="order-modal glass" onClick={e => e.stopPropagation()} style={{ maxWidth: '700px' }}>
+                                <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '1rem' }}>
+                                    <div>
+                                        <h2 style={{ margin: 0 }}>{selectedCustomer.name}'s History</h2>
+                                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>{selectedCustomer.email}</p>
+                                    </div>
+                                    <button className="btn-ghost" onClick={() => setSelectedCustomer(null)}><LogOut size={24} style={{ transform: 'rotate(180deg)' }} /></button>
+                                </div>
+                                
+                                <div className="customer-orders-list" style={{ maxHeight: '60vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.8rem', paddingRight: '0.5rem' }}>
+                                    {customerOrders.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '3rem' }}>No orders found for this customer.</div>
+                                    ) : (
+                                        customerOrders.map(order => (
+                                            <React.Fragment key={order.id}>
+                                            <div className="order-item-mini glass" style={{ padding: '1rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
+                                                    <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                        {order.type === 'gas' ? 'Gas Refill' : order.subtype === 'food' ? 'Food' : 'Package'}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                                        {new Date(order.timestamp).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontWeight: '800', color: 'var(--primary)' }}>GHS {order.total}</div>
+                                                    <div className={`status-badge ${order.status.toLowerCase()}`} style={{ fontSize: '0.7rem' }}>{order.status}</div>
+                                                    {order.rating && (
+                                                        <div style={{ display: 'flex', gap: '2px', color: '#f59e0b', marginTop: '4px', justifyContent: 'flex-end' }}>
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <Star key={i} size={10} fill={i < order.rating ? 'currentColor' : 'none'} />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {order.customerComment && (
+                                                <div style={{ fontSize: '0.8rem', color: '#666', fontStyle: 'italic', paddingLeft: '1rem', borderLeft: '2px solid var(--primary)', marginBottom: '0.5rem' }}>
+                                                    "{order.customerComment}"
+                                                </div>
+                                            )}
+                                            </React.Fragment>
+                                        ))
+                                    )}
+                                </div>
+                                
+                                <button className="btn btn-primary full-width" style={{ marginTop: '1.5rem' }} onClick={() => setSelectedCustomer(null)}>
+                                    Close History
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </main>
         </div>
     );

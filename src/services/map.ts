@@ -1,5 +1,5 @@
 
-export const MAPBOX_TOKEN = "YOUR_MAPBOX_TOKEN";
+export const MAPBOX_TOKEN = 'pk.eyJ1IjoiZmxhc2gwMDAiLCJhIjoiY21tbTB0b3h4MXV3bzJwczhzbmJodmVtcCJ9.QbdM82Xcl2L9xMMjV6tUJQ';
 
 export const reverseGeocode = async (lat: number, lng: number) => {
     try {

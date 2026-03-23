@@ -1135,3 +1135,40 @@ textarea {
     border-radius: 0;
   }
 }
+/* Tracking Completed Rating Overlay */
+.completed-rating-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 100;
+    padding: 1.5rem;
+}
+
+.customer-feedback-view {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.customer-feedback-view label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.stars-view {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0.4rem;
+}
+
+.comment-preview {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--text);
+    margin: 0;
+}

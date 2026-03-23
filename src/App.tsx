@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SplashScreen from './components/SplashScreen';
 import AnimatedBackground from './components/AnimatedBackground';
 import Landing from './pages/Landing';
@@ -17,9 +17,16 @@ import './App.css';
 
 function App() {
   const [showSplashScreen, setShowSplashScreen] = useState(() => {
-    // Only show splash screen if the app is running in standalone mode (installed PWA)
-    return window.matchMedia('(display-mode: standalone)').matches || 
-           (window.navigator as any).standalone === true;
+    // Check if the app is running in standalone mode (installed PWA)
+    // Add safety checks for media query support and navigator properties
+    try {
+      const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || 
+                          (window.navigator && (window.navigator as any).standalone === true);
+      return isStandalone;
+    } catch (e) {
+      console.warn('PWA mode detection failed, defaulting to regular web mode.', e);
+      return false;
+    }
   });
 
   useEffect(() => {
@@ -40,23 +47,27 @@ function App() {
           {showSplashScreen ? (
             <SplashScreen key="splash" />
           ) : (
-            <>
+            <motion.div 
+              key="main-app-content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="app-main-content"
+            >
               <AnimatedBackground />
-              <div key="main-app" className="app-main-content">
-                <RegistrationPrompt />
-                <Routes>
-                  <Route path="/" element={<Landing />} />
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/success" element={<Success />} />
-                  <Route path="/tracking/:orderId" element={<Tracking />} />
-                </Routes>
-              </div>
-            </>
+              <RegistrationPrompt />
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/success" element={<Success />} />
+                <Route path="/tracking/:orderId" element={<Tracking />} />
+              </Routes>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

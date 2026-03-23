@@ -29,6 +29,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 const Home = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'gas' | 'delivery' | null>(null);
+    const [deliverySubtype, setDeliverySubtype] = useState<'package' | 'food' | null>(null);
     const [gasLocation, setGasLocation] = useState<string>('');
     const [gasLocationCoords, setGasLocationCoords] = useState<[number, number] | null>(null);
     const [deliveryPickupLocation, setDeliveryPickupLocation] = useState<string>('');
@@ -205,9 +206,18 @@ const Home = () => {
     const completeOrder = async (paymentRef?: string) => {
         setIsSubmitting(true);
 
+        const currentUserId = auth.currentUser?.uid || currentUser?.uid;
+
+        if (!currentUserId) {
+            alert("Order Error: You are not logged in correctly. Please refresh and try again.");
+            setIsSubmitting(false);
+            return;
+        }
+
         const orderData = {
             id: Math.floor(Math.random() * 1000000).toString(),
             type: activeTab,
+            subtype: deliverySubtype,
             location: activeTab === 'gas' ? gasLocation : deliveryPickupLocation,
             destination: activeTab === 'delivery' ? destination : 'Gas Station',
             fee: fee?.max,
@@ -217,20 +227,14 @@ const Home = () => {
             paymentMethod,
             paymentStatus: paymentMethod === 'momo' ? 'Paid' : 'Pending',
             paymentRef: paymentRef || 'N/A',
-            customerPhone: phone,
-            customerEmail: email,
-            customerId: currentUser?.uid, // Removed 'anonymous' fallback to ensure account link
+            customerPhone: phone || 'No Phone',
+            customerEmail: email || 'No Email',
+            customerId: currentUserId,
             locationCoords: activeTab === 'gas' ? gasLocationCoords : deliveryPickupCoords,
             destinationCoords,
             status: paymentMethod === 'momo' ? 'Completed' : 'Pending',
             timestamp: new Date().toISOString()
         };
-
-        if (!orderData.customerId) {
-            alert("Error: You must be logged in to place an order.");
-            setIsSubmitting(false);
-            return;
-        }
 
         console.log('Order Placed:', orderData);
 
@@ -316,13 +320,69 @@ const Home = () => {
                             <Truck size={32} />
                         </div>
                         <h2>Pick Up & Delivery</h2>
-                        <p>Send anything, anywhere. Reliable package delivery.</p>
-                        <button className="btn btn-primary">Start Delivery</button>
+                        <p>Send packages or order food. Fast and reliable.</p>
+                        <button className="btn btn-primary" onClick={() => setActiveTab('delivery')}>Select Service</button>
                     </motion.div>
                 </div>
 
                 <AnimatePresence>
-                    {activeTab && (
+                    {activeTab === 'delivery' && !deliverySubtype && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="selection-overlay"
+                        >
+                            <div className="selection-blurred-bg" style={{ backgroundImage: 'url(/hero-img.png)' }} />
+                            <div className="selection-content">
+                                <button className="close-selection-btn" onClick={() => setActiveTab(null)}><X size={32} /></button>
+                                <motion.h1 
+                                    initial={{ y: -20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    className="selection-title"
+                                >
+                                    Choose Delivery Type
+                                </motion.h1>
+                                <div className="selection-grid">
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="selection-card"
+                                        onClick={() => setDeliverySubtype('package')}
+                                    >
+                                        <div className="selection-card-image-wrap">
+                                            <img src="/images/package-vibrant.png" alt="Package Delivery" className="selection-card-image" />
+                                            <div className="selection-card-overlay" />
+                                        </div>
+                                        <div className="selection-card-info">
+                                            <h3>Package Delivery</h3>
+                                            <p>Send or receive items across the city</p>
+                                        </div>
+                                    </motion.div>
+
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="selection-card"
+                                        onClick={() => setDeliverySubtype('food')}
+                                    >
+                                        <div className="selection-card-image-wrap">
+                                            <img src="/images/food-vibrant.png" alt="Food Delivery" className="selection-card-image" />
+                                            <div className="selection-card-overlay" />
+                                        </div>
+                                        <div className="selection-card-info">
+                                            <h3>Food Delivery</h3>
+                                            <p>Hot, fresh meals from your favorites</p>
+                                        </div>
+                                    </motion.div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {( (activeTab === 'gas') || (activeTab === 'delivery' && deliverySubtype) ) && (
                         <motion.div
                             initial={{ opacity: 0, y: 100 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -330,10 +390,16 @@ const Home = () => {
                             className="order-modal-backdrop"
                         >
                             <div className="order-modal glass">
-                                <button className="close-btn" onClick={() => setActiveTab(null)}><X /></button>
+                                <button className="close-btn" onClick={() => {
+                                    setActiveTab(null);
+                                    setDeliverySubtype(null);
+                                }}><X /></button>
 
                                 <div className="order-form-container">
-                                    <h3>{activeTab === 'gas' ? 'Gas Refill Order' : 'Flash Delivery Order'}</h3>
+                                    <h3>
+                                        {activeTab === 'gas' ? 'Gas Refill Order' : 
+                                         deliverySubtype === 'food' ? 'Food Delivery Order' : 'Package Delivery Order'}
+                                    </h3>
                                     <form onSubmit={handleSubmitOrder}>
                                         <div className="form-group-row">
                                             <div className="form-group">

@@ -5,8 +5,9 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { MAPBOX_TOKEN } from '../services/map';
 import mapboxgl from 'mapbox-gl';
-import { ArrowLeft, Package, MapPin, Truck } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft, Package, MapPin, Truck, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import RatingSystem from '../components/RatingSystem';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -23,10 +24,8 @@ const Tracking = () => {
 
 
     useEffect(() => {
-        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-        if (!isAdmin) {
-            navigate('/admin');
-        }
+        // We'll allow customers to track orders without admin status
+        // but perhaps keep a check for valid order content below.
     }, [navigate]);
 
     useEffect(() => {
@@ -34,7 +33,7 @@ const Tracking = () => {
 
         const unsub = onSnapshot(doc(db, 'orders', orderId), (docSnap) => {
             if (docSnap.exists()) {
-                setOrder({ id: docSnap.id, ...docSnap.data() });
+                setOrder({ ...(docSnap.data() as any), id: docSnap.id });
             } else {
                 console.error('Order not found');
             }
@@ -141,11 +140,17 @@ const Tracking = () => {
                 <div className="map-wrapper">
                     <div ref={mapContainer} className="map-container" />
 
+                    {order.status === 'Completed' && !order.rating && (
+                        <div className="completed-rating-overlay">
+                            <RatingSystem orderId={orderId!} />
+                        </div>
+                    )}
+
                     {showDetails && (
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
                             className="status-card glass"
                         >
                             <div className="status-header">
@@ -176,13 +181,26 @@ const Tracking = () => {
                                 </div>
                             </div>
 
+                            {order.rating && (
+                                <div className="customer-feedback-view">
+                                    <div className="divider" />
+                                    <label>Your Feedback</label>
+                                    <div className="stars-view">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={14} fill={i < order.rating ? '#f59e0b' : 'none'} color={i < order.rating ? '#f59e0b' : '#cbd5e1'} />
+                                        ))}
+                                    </div>
+                                    {order.customerComment && <p className="comment-preview">"{order.customerComment}"</p>}
+                                </div>
+                            )}
+
                             <div className="order-summary-footer">
                                 <div className="total-price">
-                                    <span>Total:</span>
-                                    <strong>GHS {order.total}.00</strong>
+                                    <span>Total Value:</span>
+                                    <strong>GHS {order.total || 0}</strong>
                                 </div>
                                 <button className="btn btn-outline sm" onClick={() => setShowDetails(false)}>
-                                    Close
+                                    Hide Info
                                 </button>
                             </div>
                         </motion.div>
