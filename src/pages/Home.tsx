@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Flame, X, Phone, MessageCircle, Clock } from 'lucide-react';
+import { Truck, Flame, X, Phone, MessageCircle, Clock, Package, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { notifyNewOrder } from '../services/notifications';
 import { initializePaystack } from '../services/payment';
@@ -350,25 +350,25 @@ const Home = () => {
                                         className="selection-card"
                                         onClick={() => setDeliverySubtype('package')}
                                     >
-                                        <div className="selection-card-image-wrap">
-                                            <img src="/images/package-vibrant.png" alt="Package Delivery" className="selection-card-image" />
-                                            <div className="selection-card-overlay" />
+                                        <div className="selection-card-icon-wrap package">
+                                            <Package size={48} />
                                         </div>
                                         <div className="selection-card-info">
                                             <h3>Package Delivery</h3>
                                             <p>Send or receive items across the city</p>
                                         </div>
                                     </motion.div>
-
                                     <motion.div 
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         className="selection-card"
                                         onClick={() => setDeliverySubtype('food')}
                                     >
-                                        <div className="selection-card-image-wrap">
-                                            <img src="/images/food-vibrant.png" alt="Food Delivery" className="selection-card-image" />
-                                            <div className="selection-card-overlay" />
+                                        <div className="selection-card-icon-wrap food">
+                                            <div className="icon-group">
+                                                <Zap size={24} className="badge-icon" />
+                                                <Truck size={48} />
+                                            </div>
                                         </div>
                                         <div className="selection-card-info">
                                             <h3>Food Delivery</h3>
@@ -389,30 +389,25 @@ const Home = () => {
                             exit={{ opacity: 0, y: 100 }}
                             className="order-modal-backdrop"
                         >
-                            <div className="order-modal glass" style={{ overflow: 'hidden', padding: 0 }}>
-                                <div className="order-modal-header">
-                                    <div className="order-modal-image-wrap">
-                                        <img 
-                                            src={activeTab === 'gas' ? '/images/gas-vibrant.png' : 
-                                                 deliverySubtype === 'food' ? '/images/food-vibrant.png' : '/images/package-vibrant.png'} 
-                                            alt="Service Header" 
-                                            className="order-modal-header-img" 
-                                        />
-                                        <div className="order-modal-overlay" />
-                                        <div className="order-modal-title-overlay">
-                                            <h3>
-                                                {activeTab === 'gas' ? 'Gas Refill' : 
-                                                 deliverySubtype === 'food' ? 'Food Delivery' : 'Package Delivery'}
-                                            </h3>
+                            <div className="order-modal glass image-free-modal">
+                                <div className="order-modal-header clean">
+                                    <div className="order-modal-title-clean">
+                                        <div className="icon-box">
+                                            {activeTab === 'gas' ? <Flame size={24} /> : 
+                                             deliverySubtype === 'food' ? <Truck size={24} /> : <Package size={24} />}
                                         </div>
+                                        <h3>
+                                            {activeTab === 'gas' ? 'Gas Refill Order' : 
+                                             deliverySubtype === 'food' ? 'Food Delivery Order' : 'Package Delivery Order'}
+                                        </h3>
                                     </div>
-                                    <button className="close-btn-alt" onClick={() => {
+                                    <button className="close-btn" onClick={() => {
                                         setActiveTab(null);
                                         setDeliverySubtype(null);
                                     }}><X /></button>
                                 </div>
 
-                                <div className="order-form-container" style={{ padding: '1.5rem' }}>
+                                <div className="order-form-container scrollable">
                                     <form onSubmit={handleSubmitOrder}>
                                         <div className="form-group-row">
                                             <div className="form-group">

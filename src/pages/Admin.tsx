@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff, Package, Phone as PhoneIcon, User as UserIcon, Clock } from 'lucide-react';
+import { 
+    Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff, Package, 
+    Phone as PhoneIcon, User as UserIcon, Clock, Loader2, Copy, Star, Truck 
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 import { notifyStatusUpdate } from '../services/notifications';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
-import { Loader2, Copy, Star } from 'lucide-react';
 
 const Admin = () => {
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Admin = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [orders, setOrders] = useState<any[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
-    const lastOrderIdRef = React.useRef<string | null>(null);
+    const lastOrderIdRef = useRef<string | null>(null);
     const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
     const [customerOrders, setCustomerOrders] = useState<any[]>([]);
 
@@ -180,6 +182,8 @@ const Admin = () => {
     const handleLogout = async () => {
         try {
             await signOut(auth);
+            setIsLoggedIn(false);
+            setIsAdmin(false);
             navigate('/login');
         } catch (err) {
             console.error("Logout error:", err);
@@ -507,20 +511,20 @@ const Admin = () => {
                                         <div style={{ textAlign: 'center', padding: '3rem' }}>No orders found for this customer.</div>
                                     ) : (
                                         customerOrders.map(order => (
-                                            <React.Fragment key={order.id}>
+                                            <Fragment key={order?.id || Math.random()}>
                                             <div className="order-item-mini glass" style={{ padding: '1rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div>
                                                     <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                        {order.type === 'gas' ? 'Gas Refill' : order.subtype === 'food' ? 'Food' : 'Package'}
+                                                        {order?.type === 'gas' ? 'Gas Refill' : (order?.subtype === 'food' ? 'Food' : 'Package')}
                                                     </div>
                                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                                        {new Date(order.timestamp).toLocaleDateString()}
+                                                        {order?.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A'}
                                                     </div>
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ fontWeight: '800', color: 'var(--primary)' }}>GHS {order.total}</div>
-                                                    <div className={`status-badge ${order.status.toLowerCase()}`} style={{ fontSize: '0.7rem' }}>{order.status}</div>
-                                                    {order.rating && (
+                                                    <div style={{ fontWeight: '800', color: 'var(--primary)' }}>GHS {order?.total || 0}</div>
+                                                    <div className={`status-badge ${(order?.status || 'Pending').toLowerCase().replace(' ', '-')}`} style={{ fontSize: '0.7rem' }}>{order?.status || 'Pending'}</div>
+                                                    {order?.rating && (
                                                         <div style={{ display: 'flex', gap: '2px', color: '#f59e0b', marginTop: '4px', justifyContent: 'flex-end' }}>
                                                             {[...Array(5)].map((_, i) => (
                                                                 <Star key={i} size={10} fill={i < order.rating ? 'currentColor' : 'none'} />
@@ -529,12 +533,12 @@ const Admin = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            {order.customerComment && (
+                                            {order?.customerComment && (
                                                 <div style={{ fontSize: '0.8rem', color: '#666', fontStyle: 'italic', paddingLeft: '1rem', borderLeft: '2px solid var(--primary)', marginBottom: '0.5rem' }}>
                                                     "{order.customerComment}"
                                                 </div>
                                             )}
-                                            </React.Fragment>
+                                            </Fragment>
                                         ))
                                     )}
                                 </div>

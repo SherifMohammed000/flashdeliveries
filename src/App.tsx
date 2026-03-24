@@ -20,8 +20,8 @@ function App() {
     // Check if the app is running in standalone mode (installed PWA)
     // Add safety checks for media query support and navigator properties
     try {
-      const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || 
-                          (window.navigator && (window.navigator as any).standalone === true);
+      const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        (window.navigator && (window.navigator as any).standalone === true);
       return isStandalone;
     } catch (e) {
       console.warn('PWA mode detection failed, defaulting to regular web mode.', e);
@@ -47,7 +47,7 @@ function App() {
           {showSplashScreen ? (
             <SplashScreen key="splash" />
           ) : (
-            <motion.div 
+            <motion.div
               key="main-app-content"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
