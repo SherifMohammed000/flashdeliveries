@@ -2,22 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      },
-
-      // Disable precache glob scanning — avoids the "dev-dist does not exist" warning.
-      // The service worker still works; it just won't pre-cache assets in dev mode.
-      workbox: {
-        globPatterns: []
-      },
+      devOptions: { enabled: true, type: 'module' },
+      workbox: { globPatterns: [] },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-icon.png'],
       manifest: {
         name: 'Flash Deliveries',
@@ -28,25 +19,16 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         icons: [
-          {
-            src: 'pwa-icon.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-icon.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-icon.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
+          { src: 'pwa-icon.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-icon.png', sizes: '512x512', type: 'image/png' },
+          { src: 'pwa-icon.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       }
     }),
   ],
   base: './',
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true
+  }
 })
