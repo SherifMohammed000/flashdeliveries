@@ -249,17 +249,17 @@ const Home = () => {
                         <span>FLASH DELIVERIES</span>
                     </div>
                     <div className="header-actions">
-                        <button className="btn btn-ghost sm" onClick={() => navigate('/orders')}>
-                            <Clock size={16} /> My Orders
+                        <button className="btn btn-ghost sm" onClick={() => navigate('/orders')} title="My Orders">
+                            <Clock size={20} />
                         </button>
-                        <a href="tel:0557138306" className="btn btn-ghost sm">
-                            <Phone size={16} /> Hotline
+                        <a href="tel:0557138306" className="btn btn-ghost sm" title="Call Hotline">
+                            <Phone size={20} />
                         </a>
-                        <a href="https://wa.me/233557138306" className="btn btn-ghost sm">
-                            <MessageCircle size={16} /> WhatsApp
+                        <a href="https://wa.me/233557138306" className="btn btn-ghost sm" title="WhatsApp Us">
+                            <MessageCircle size={20} />
                         </a>
-                        <button className="btn btn-ghost sm" onClick={() => auth.signOut()}>
-                            Logout
+                        <button className="btn btn-ghost sm" onClick={() => auth.signOut()} title="Logout">
+                            <LogOut size={20} />
                         </button>
                     </div>
                 </div>

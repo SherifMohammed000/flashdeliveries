@@ -63,7 +63,7 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: var(--white);
   box-shadow: 0 4px 14px 0 rgba(230, 57, 70, 0.39);
 }
@@ -110,7 +110,7 @@ h4 {
 }
 
 section {
-  padding: 4rem 0;
+  padding: 2.5rem 0;
 }
 
 /* Animations */

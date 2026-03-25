@@ -17,6 +17,7 @@ header.glass {
   position: sticky;
   top: 0;
   z-index: 1000;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .nav-content,
@@ -42,7 +43,7 @@ header.glass {
 }
 
 .hero {
-  padding: 6rem 0;
+  padding: 4rem 0;
   overflow: hidden;
 }
 
@@ -283,28 +284,21 @@ footer .btn-outline:hover {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   display: flex;
-  /* align to top so tall content isn't orphaned above viewport */
-  align-items: flex-start;
+  align-items: flex-end; /* Align to bottom for better mobile reachability */
   justify-content: center;
   z-index: 1000;
-  /* allow the backdrop itself to scroll on very small screens */
-  overflow-y: auto;
-  padding: 1.5rem;
+  padding-bottom: env(safe-area-inset-bottom, 1.5rem);
 }
 
 .order-modal {
   width: 100%;
   max-width: 520px;
-  border-radius: 32px;
-  padding: 2rem 2.5rem;
+  border-radius: 32px 32px 0 0; /* Bottom sheet style */
+  padding: 1.5rem;
   position: relative;
-  /* cap height at 90% of dynamic viewport (accounts for mobile address bar) */
-  max-height: 90dvh;
-  /* make the modal itself scroll when content overflows */
+  max-height: 92dvh;
   overflow-y: auto;
-  /* pull it down a bit so it feels centered on desktop */
-  margin: auto;
-  /* smooth scroll on iOS */
+  margin: 0;
   -webkit-overflow-scrolling: touch;
 }
 

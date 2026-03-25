@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { Zap, Clock, Package, XCircle, LogOut, User as UserIcon, Loader2, ArrowLeft, Star } from 'lucide-react';
+import { Zap, Clock, Package, XCircle, LogOut, User as UserIcon, Loader2, ArrowLeft, Star, Phone, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RatingSystem from '../components/RatingSystem';
 import { notifyStatusUpdate } from '../services/notifications';
@@ -104,11 +104,17 @@ const Orders = () => {
                         <span>FLASH ORDERS</span>
                     </div>
                     <div className="header-actions">
-                        <button className="btn btn-ghost sm" onClick={() => navigate('/home')}>
-                            <ArrowLeft size={16} /> Back
+                        <button className="btn btn-ghost sm" onClick={() => navigate('/home')} title="Back to Home">
+                            <ArrowLeft size={20} />
                         </button>
-                        <button className="btn btn-ghost sm" onClick={handleLogout}>
-                            <LogOut size={16} /> Logout
+                        <a href="tel:0557138306" className="btn btn-ghost sm" title="Call Hotline">
+                            <Phone size={20} />
+                        </a>
+                        <a href="https://wa.me/233557138306" className="btn btn-ghost sm" title="WhatsApp Us">
+                            <MessageCircle size={20} />
+                        </a>
+                        <button className="btn btn-ghost sm" onClick={handleLogout} title="Logout">
+                            <LogOut size={20} />
                         </button>
                     </div>
                 </div>
