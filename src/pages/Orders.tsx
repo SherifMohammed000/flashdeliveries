@@ -14,35 +14,8 @@ const Orders = () => {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        const checkAuthPersistence = () => {
-            const loginTime = localStorage.getItem('fdel_login_time');
-            const orderCount = parseInt(localStorage.getItem('fdel_order_count') || '0');
-            
-            if (loginTime) {
-                const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
-                const now = Date.now();
-                if (now - parseInt(loginTime) > threeDaysInMs) {
-                    auth.signOut();
-                    localStorage.removeItem('fdel_login_time');
-                    localStorage.removeItem('fdel_order_count');
-                    navigate('/login');
-                    return true;
-                }
-            }
-            
-            if (orderCount >= 5) {
-                auth.signOut();
-                localStorage.removeItem('fdel_login_time');
-                localStorage.removeItem('fdel_order_count');
-                navigate('/login?signout=reason_limit');
-                return true;
-            }
-            return false;
-        };
-
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             if (user) {
-                if (checkAuthPersistence()) return;
                 setUser(user);
                 // Simplified query to avoid index issues
                 const q = query(

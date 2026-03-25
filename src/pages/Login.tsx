@@ -19,8 +19,6 @@ const Login = () => {
         const params = new URLSearchParams(window.location.search);
         if (params.get('signup') === 'success') {
             setSuccessMessage('Account created successfully! Please login.');
-        } else if (params.get('signout') === 'reason_limit') {
-            setSuccessMessage('Secure session ended (3 days or 5 orders). Please login again.');
         }
     }, []);
 
@@ -30,9 +28,6 @@ const Login = () => {
         setError('');
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // Initialize session tracking: 3 days or 5 orders auto-logout rule
-            localStorage.setItem('fdel_login_time', Date.now().toString());
-            localStorage.setItem('fdel_order_count', '0');
             navigate('/home');
         } catch (err: any) {
             console.error(err);
@@ -62,10 +57,6 @@ const Login = () => {
                 });
             }
 
-            // Initialize session tracking
-            localStorage.setItem('fdel_login_time', Date.now().toString());
-            localStorage.setItem('fdel_order_count', '0');
-            
             navigate('/home');
         } catch (err: any) {
             console.error(err);
