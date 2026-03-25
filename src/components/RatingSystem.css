@@ -1,9 +1,8 @@
 .rating-container {
-    padding: 2.5rem;
+    padding: 1.25rem;
     border-radius: 24px;
     margin-top: 1rem;
     width: 100%;
-    max-width: 480px;
 }
 
 .rating-form h3 {

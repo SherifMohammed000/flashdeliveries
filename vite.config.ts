@@ -9,7 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       devOptions: { enabled: true, type: 'module' },
       workbox: { 
-        globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         navigateFallback: 'index.html'
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-icon.png'],

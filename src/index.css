@@ -23,13 +23,33 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  position: fixed;
+}
+
 body {
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: transparent;
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+#root, #app-root-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-main-content {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .glass {
