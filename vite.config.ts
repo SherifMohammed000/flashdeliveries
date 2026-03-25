@@ -12,7 +12,9 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        navigateFallback: 'index.html'
+        navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
+        maximumFileSizeToCacheInBytes: 5242880 /* 5 MiB */
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-icon.png'],
       manifest: {
@@ -34,6 +36,14 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+          'vendor-ui': ['framer-motion', 'lucide-react', 'react-router-dom']
+        }
+      }
+    }
   }
 })
