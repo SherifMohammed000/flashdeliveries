@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Flame, X, Phone, MessageCircle, Clock, Package, Zap } from 'lucide-react';
+import { Truck, Flame, X, Package, Zap, Clock, Phone, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { notifyNewOrder } from '../services/notifications';
 import { initializePaystack } from '../services/payment';

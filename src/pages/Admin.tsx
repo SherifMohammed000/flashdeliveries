@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-    Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff, Package, 
-    Phone as PhoneIcon, User as UserIcon, Clock, Loader2, Copy, Star, Truck 
+    Lock, LogOut, Map, Home as HomeIcon, Eye, EyeOff, 
+    Loader2, Copy, Star 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 import { notifyStatusUpdate } from '../services/notifications';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
@@ -16,7 +16,6 @@ const Admin = () => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
     const [activeTab, setActiveTab] = useState<'orders' | 'customers'>('orders');
     const [showPassword, setShowPassword] = useState(false);
     const [orders, setOrders] = useState<any[]>([]);
@@ -34,14 +33,12 @@ const Admin = () => {
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists() && userDoc.data().role === 'admin') {
                         setIsLoggedIn(true);
-                        setIsAdmin(true);
                         if (Notification.permission === 'default') {
                             Notification.requestPermission();
                         }
                     } else {
                         // Not an admin
                         setIsLoggedIn(false);
-                        setIsAdmin(false);
                         if (userDoc.exists()) {
                             alert("Access Denied: You do not have admin privileges.");
                         } else {
@@ -55,7 +52,6 @@ const Admin = () => {
                 }
             } else {
                 setIsLoggedIn(false);
-                setIsAdmin(false);
             }
         });
         return () => unsubscribe();
@@ -183,7 +179,6 @@ const Admin = () => {
         try {
             await signOut(auth);
             setIsLoggedIn(false);
-            setIsAdmin(false);
             navigate('/login');
         } catch (err) {
             console.error("Logout error:", err);
