@@ -17,11 +17,11 @@ const Success = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 className="success-content glass"
             >
-                <div className="success-icon">
-                    <CheckCircle size={80} color="#e63946" />
+                <div className="success-icon" style={{ marginBottom: '1rem' }}>
+                    <CheckCircle size={60} color="#e63946" />
                 </div>
-                <h1>Order Placed Successfully!</h1>
-                <p>Your order has been received. Our rider will contact you shortly.</p>
+                <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Order Placed!</h1>
+                <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem' }}>Your order has been received. Our rider will contact you shortly.</p>
 
                 <div className="next-steps">
                     <p>You will receive an SMS confirmation in a moment.</p>

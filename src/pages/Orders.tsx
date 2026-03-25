@@ -128,19 +128,19 @@ const Orders = () => {
                 >
                     <ArrowLeft size={16} /> Back to Home
                 </button>
-                <div className="profile-header" style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div className="user-avatar" style={{ width: '60px', height: '60px', background: 'var(--primary)', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                        <UserIcon size={32} style={{ margin: 'auto' }} />
+                <div className="profile-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div className="user-avatar" style={{ width: '45px', height: '45px', background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                        <UserIcon size={24} style={{ margin: 'auto' }} />
                     </div>
                     <div>
-                        <h2 style={{ margin: 0 }}>{user?.displayName || 'Flash Customer'}</h2>
-                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>{user?.email}</p>
+                        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>{user?.displayName || 'Flash Customer'}</h2>
+                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>{user?.email}</p>
                     </div>
                 </div>
 
-                <div className="section-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ margin: 0 }}>Order History</h3>
-                    <span className="badge" style={{ background: 'rgba(0,0,0,0.05)', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                <div className="section-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem' }}>Order History</h3>
+                    <span className="badge" style={{ background: 'rgba(0,0,0,0.05)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
                         {orders.length} Orders
                     </span>
                 </div>
@@ -164,34 +164,33 @@ const Orders = () => {
                                 style={{ padding: '1.5rem', borderRadius: '24px', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}
                             >
                                 <div className="order-type-icon" style={{ 
-                                    width: '50px', 
-                                    height: '50px', 
+                                    width: '40px', 
+                                    height: '40px', 
                                     background: order.type === 'gas' ? 'rgba(230, 57, 70, 0.1)' : 'rgba(59, 130, 246, 0.1)', 
-                                    borderRadius: '12px',
+                                    borderRadius: '10px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     color: order.type === 'gas' ? 'var(--primary)' : '#3b82f6'
                                 }}>
-                                    {order.type === 'gas' ? <Zap size={24} /> : <Package size={24} />}
+                                    {order.type === 'gas' ? <Zap size={18} /> : <Package size={18} />}
                                 </div>
 
-                                <div className="order-main-info" style={{ flex: 1, minWidth: '150px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                                        <h4 style={{ margin: 0 }}>{order.type === 'gas' ? 'Gas Refill' : 'Package Delivery'}</h4>
-                                        <span className={`status-badge ${order.status.toLowerCase().replace(' ', '-')}`} style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}>
+                                <div className="order-main-info" style={{ flex: 1, minWidth: '120px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.1rem' }}>
+                                        <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{order.type === 'gas' ? 'Gas Refill' : 'Package Delivery'}</h4>
+                                        <span className={`status-badge ${order.status.toLowerCase().replace(' ', '-')}`} style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem' }}>
                                             {order.status}
                                         </span>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                                        <Clock size={12} />
-                                        {new Date(order.timestamp).toLocaleDateString()} at {new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                                        <Clock size={10} />
+                                        {new Date(order.timestamp).toLocaleDateString()}
                                     </div>
                                 </div>
 
-                                <div className="order-price-info" style={{ textAlign: 'right', minWidth: '100px' }}>
-                                    <div style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--primary)' }}>GHS {order.total}.00</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.paymentMethod === 'cod' ? 'Pay on Delivery' : 'Paid via MOMO'}</div>
+                                <div className="order-price-info" style={{ textAlign: 'right', minWidth: '80px' }}>
+                                    <div style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--primary)' }}>GHS {order.total}</div>
                                 </div>
 
                                 <div className="order-actions" style={{ width: '100%', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '1rem', marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

@@ -20,6 +20,7 @@ header.glass {
   top: 0;
   z-index: 1000;
   padding-top: env(safe-area-inset-top, 0px);
+  height: 55px; /* Shrunk for app feel */
 }
 
 .nav-content,
@@ -27,17 +28,17 @@ header.glass {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
+  height: 100%;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
+  gap: 0.25rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: white;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
 }
 
 .logo .text-primary {
@@ -221,10 +222,11 @@ footer .btn-outline:hover {
 
 /* Home Styles */
 .home-container {
-  height: 100%;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding-bottom: calc(65px + env(safe-area-inset-bottom, 5px));
 }
 
 .header-content {
@@ -237,8 +239,8 @@ footer .btn-outline:hover {
 .main-content {
   flex: 1;
   overflow-y: auto;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .services-grid {
@@ -303,10 +305,10 @@ footer .btn-outline:hover {
 .order-modal {
   width: 100%;
   max-width: 520px;
-  border-radius: 32px 32px 0 0; /* Bottom sheet style */
-  padding: 1.5rem;
+  border-radius: 32px 32px 0 0;
+  padding: 1rem;
   position: relative;
-  max-height: 92dvh;
+  max-height: 98dvh;
   overflow-y: auto;
   margin: 0;
   -webkit-overflow-scrolling: touch;
@@ -314,8 +316,8 @@ footer .btn-outline:hover {
 
 .close-btn {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 1rem;
+  right: 1rem;
   border: none;
   background: none;
   cursor: pointer;
@@ -323,7 +325,7 @@ footer .btn-outline:hover {
 }
 
 .form-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.75rem;
 }
 
 .form-group label {
@@ -365,9 +367,9 @@ textarea {
 
 .fee-summary {
   background: var(--background);
-  padding: 1.5rem;
-  border-radius: 16px;
-  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
 }
 
 .fee-row {
@@ -663,37 +665,47 @@ textarea {
 
   .services-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 0.75rem;
     padding: 0 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: calc(100% - 2rem);
+    justify-content: flex-start;
+    height: 100%;
   }
 
   .service-card {
-    padding: 1.5rem 1rem;
-    flex: 1;
+    padding: 1rem;
+    flex: initial;
+    height: 25dvh;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-height: 40%;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    justify-content: flex-start;
+    gap: 1rem;
+    border-radius: 16px;
   }
 
   .service-card h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.15rem;
   }
 
   .service-card p {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    line-height: 1.3;
+  }
+
+  .service-card .btn-primary {
+    display: none; /* Hide button on card for compact view */
   }
 
   .service-icon {
     width: 60px;
     height: 60px;
-    margin-bottom: 1rem;
+    margin: 0;
+    flex-shrink: 0;
   }
 
   .hero {

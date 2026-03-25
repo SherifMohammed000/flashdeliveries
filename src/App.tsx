@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Orders from './pages/Orders';
+import BottomNav from './components/BottomNav';
 import { RegistrationPrompt } from './services/NotificationPrompt';
 import './App.css';
 
@@ -67,6 +68,7 @@ function App() {
                 <Route path="/success" element={<Success />} />
                 <Route path="/tracking/:orderId" element={<Tracking />} />
               </Routes>
+              <BottomNav />
             </motion.div>
           )}
         </AnimatePresence>
