@@ -56,6 +56,7 @@ header.glass {
 .hero-text h1 {
   font-size: 4rem;
   margin-bottom: 1.5rem;
+  line-height: 1.1;
 }
 
 .hero-text p {
@@ -143,7 +144,7 @@ header.glass .btn-ghost:hover {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 2rem;
 }
 
@@ -233,7 +234,7 @@ footer .btn-outline:hover {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
   gap: 2rem;
 }
 
@@ -625,8 +626,23 @@ textarea {
     order: -1;
   }
 
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-text p {
+    font-size: 1.1rem;
+    padding: 0 1rem;
+  }
+
   .services-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .service-card {
+    padding: 2rem 1.5rem;
   }
 
   .footer-content {
@@ -638,6 +654,86 @@ textarea {
 
   .footer-links {
     gap: 1rem;
+  }
+
+  /* Responsive Table Helper */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+  }
+
+  .admin-table {
+    min-width: 600px;
+  }
+
+  /* Modal Mobile Tweaks */
+  .order-modal {
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 24px 24px 0 0;
+    position: fixed;
+    bottom: 0;
+    max-height: 95dvh;
+  }
+
+  .order-modal-header.clean {
+    padding: 1rem;
+  }
+
+  .order-form-container.scrollable {
+    padding: 1rem;
+  }
+
+  .form-group-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Header scaling */
+  .header-content {
+    height: 60px;
+    padding: 0 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .header-actions {
+    gap: 0.25rem;
+  }
+
+  .header-actions .btn.sm {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .header-actions .btn span {
+    display: none; /* Hide button text on mobile for small buttons */
+  }
+
+  .hero {
+    padding: 3rem 0;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+  
+  .large-text {
+    font-size: 2.2rem;
+  }
+  
+  .service-card h2 {
+    font-size: 1.3rem;
   }
 }
 
