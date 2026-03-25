@@ -27,3 +27,4 @@ export const messaging = getMessaging(app);
 // Initialize Auth and get a reference to the service
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });

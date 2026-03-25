@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth, db, googleProvider } from '../services/firebase';
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { Mail, Lock, User, Zap, ArrowLeft, Loader2, Eye, EyeOff, Phone } from 'lucide-react';
 import { sendEmailNotification, sendSMSNotification, sendWelcomePushNotification } from '../services/notifications';
@@ -16,6 +16,43 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    
+    React.useEffect(() => {
+        const handleRedirectResult = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    setLoading(true);
+                    const user = result.user;
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    
+                    if (!userDoc.exists()) {
+                        await setDoc(doc(db, 'users', user.uid), {
+                            uid: user.uid,
+                            name: user.displayName || 'Google User',
+                            email: user.email,
+                            phone: user.phoneNumber || '',
+                            role: 'customer',
+                            createdAt: new Date().toISOString()
+                        });
+                        const welcomeMsg = `Hello ${user.displayName || 'Customer'}, welcome to Flash! Your account has been created via Google.`;
+                        Promise.allSettled([
+                            sendEmailNotification(user.email || '', "Welcome to Flash", welcomeMsg),
+                            sendWelcomePushNotification(user.displayName || 'Customer')
+                        ]);
+                    }
+                    navigate('/home');
+                }
+            } catch (err: any) {
+                console.error("Redirect Result Error:", err);
+                setError(err.message || 'Google Sign-up failed.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        handleRedirectResult();
+    }, [navigate]);
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,11 +103,9 @@ const Signup = () => {
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
 
-            // Check if user already exists in Firestore
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             
             if (!userDoc.exists()) {
-                // Store extra user info in Firestore for new user
                 await setDoc(doc(db, 'users', user.uid), {
                     uid: user.uid,
                     name: user.displayName || 'Google User',
@@ -80,7 +115,6 @@ const Signup = () => {
                     createdAt: new Date().toISOString()
                 });
 
-                // Send welcome notifications
                 const welcomeMsg = `Hello ${user.displayName || 'Customer'}, welcome to Flash! Your account has been created via Google.`;
                 Promise.allSettled([
                     sendEmailNotification(user.email || '', "Welcome to Flash", welcomeMsg),
@@ -90,8 +124,16 @@ const Signup = () => {
 
             navigate('/home');
         } catch (err: any) {
-            console.error(err);
-            setError(err.message || 'Google Sign-up failed.');
+            console.error("Popup Error:", err);
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+                try {
+                    await signInWithRedirect(auth, googleProvider);
+                } catch (redirectErr: any) {
+                    setError(redirectErr.message || 'Google Sign-up failed.');
+                }
+            } else {
+                setError(err.message || 'Google Sign-up failed.');
+            }
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth, db, googleProvider } from '../services/firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Mail, Lock, Zap, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -20,7 +20,37 @@ const Login = () => {
         if (params.get('signup') === 'success') {
             setSuccessMessage('Account created successfully! Please login.');
         }
-    }, []);
+
+        // Handle Google Redirect Result
+        const handleRedirectResult = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    setLoading(true);
+                    const user = result.user;
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDoc.exists()) {
+                        await setDoc(doc(db, 'users', user.uid), {
+                            uid: user.uid,
+                            name: user.displayName || 'Google User',
+                            email: user.email,
+                            phone: user.phoneNumber || '',
+                            role: 'customer',
+                            createdAt: new Date().toISOString()
+                        });
+                    }
+                    navigate('/home');
+                }
+            } catch (err: any) {
+                console.error("Redirect Result Error:", err);
+                setError(err.message || 'Google login failed.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        handleRedirectResult();
+    }, [navigate]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,10 +71,10 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
+            // First attempt with popup
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
 
-            // Check if user exists in Firestore, if not create them
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (!userDoc.exists()) {
                 await setDoc(doc(db, 'users', user.uid), {
@@ -59,8 +89,17 @@ const Login = () => {
 
             navigate('/home');
         } catch (err: any) {
-            console.error(err);
-            setError(err.message || 'Google login failed.');
+            console.error("Popup Error:", err);
+            // If popup is blocked or fails, try redirect
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+                try {
+                    await signInWithRedirect(auth, googleProvider);
+                } catch (redirectErr: any) {
+                    setError(redirectErr.message || 'Google login failed.');
+                }
+            } else {
+                setError(err.message || 'Google login failed.');
+            }
         } finally {
             setLoading(false);
         }
