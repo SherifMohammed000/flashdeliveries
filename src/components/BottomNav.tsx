@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, User, Phone } from 'lucide-react';
+import { Home, ClipboardList, MessageCircle, Phone } from 'lucide-react';
 import './BottomNav.css';
 
 const BottomNav = () => {
@@ -30,10 +30,10 @@ const BottomNav = () => {
                 <Phone size={22} />
                 <span>Call Us</span>
             </a>
-            <button className="nav-item" onClick={() => navigate('/orders')}>
-                <User size={22} />
-                <span>Account</span>
-            </button>
+            <a href="https://wa.me/233557138306" className="nav-item" target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={22} />
+                <span>WhatsApp</span>
+            </a>
         </nav>
     );
 };

@@ -2,9 +2,10 @@
 
 .app-main-content {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .landing-container {
@@ -222,11 +223,11 @@ footer .btn-outline:hover {
 
 /* Home Styles */
 .home-container {
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   padding-bottom: calc(65px + env(safe-area-inset-bottom, 5px));
+  -webkit-overflow-scrolling: touch;
 }
 
 .header-content {
@@ -238,7 +239,6 @@ footer .btn-outline:hover {
 
 .main-content {
   flex: 1;
-  overflow-y: auto;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
@@ -432,7 +432,7 @@ textarea {
 
 /* Admin Styles */
 .admin-login-container {
-  height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -575,7 +575,7 @@ textarea {
 
 /* Success Styles */
 .success-container {
-  height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -644,6 +644,30 @@ textarea {
   .hero-text p {
     margin-left: auto;
     margin-right: auto;
+    font-size: 1.25rem;
+  }
+
+  /* Specific PWA Standalone overrides for Landing section */
+  @media (display-mode: standalone), (display-mode: minimal-ui) {
+    .hero-h1 {
+       font-size: 1.8rem !important;
+       margin-bottom: 0.5rem;
+    }
+    .hero-p {
+       font-size: 0.9rem !important;
+       margin-bottom: 1rem;
+    }
+    .hero-img {
+       max-width: 180px !important;
+    }
+    .hero-text {
+       text-align: center;
+    }
+    .hero-image {
+       display: flex;
+       justify-content: center;
+       margin-top: 1rem;
+    }
   }
 
   .hero-actions {
@@ -663,56 +687,97 @@ textarea {
     padding: 0 1rem;
   }
 
+  /* Base Mobile browser styles - Restore larger sizes */
   .services-grid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
-    padding: 0 0.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100%;
+    gap: 1.5rem;
+    padding: 0 1.5rem;
+    height: auto;
+    overflow-y: visible;
   }
 
   .service-card {
-    padding: 1rem;
-    flex: initial;
-    height: 25dvh;
+    padding: 2.5rem;
+    height: auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    text-align: left;
-    justify-content: flex-start;
-    gap: 1rem;
-    border-radius: 16px;
+    text-align: center;
+    border-radius: 32px;
   }
 
   .service-card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.15rem;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .service-card p {
-    font-size: 0.8rem;
-    margin-bottom: 0;
-    line-height: 1.3;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
   }
 
   .service-card .btn-primary {
-    display: none; /* Hide button on card for compact view */
+    display: inline-flex;
   }
 
   .service-icon {
-    width: 60px;
-    height: 60px;
-    margin: 0;
-    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Specific PWA Standalone overrides - Keep it reduced and compact as a single sheet */
+  @media (display-mode: standalone), (display-mode: minimal-ui), (display-mode: window-controls-overlay) {
+    .home-container {
+      height: 100dvh;
+      padding-bottom: 75px; 
+    }
+
+    .main-content {
+      padding-top: 1rem;
+    }
+
+    .services-grid {
+      gap: 0.75rem;
+      padding: 0 0.75rem;
+      justify-content: flex-start;
+      height: 100%;
+    }
+
+    .service-card {
+      height: 25dvh;
+      padding: 1rem;
+      flex-direction: row;
+      text-align: left;
+      gap: 1rem;
+      border-radius: 20px;
+    }
+
+    .service-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .service-card p {
+      font-size: 0.82rem;
+      margin-bottom: 0;
+    }
+
+    .service-card .btn-primary {
+      display: none;
+    }
+
+    .service-icon {
+      width: 65px;
+      height: 65px;
+      margin-bottom: 0;
+    }
   }
 
   .hero {
-    height: 100dvh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
-    padding: 0;
   }
 
   .footer-content {

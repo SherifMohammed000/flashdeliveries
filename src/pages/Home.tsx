@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Flame, X, Package, Zap, Clock, Phone, MessageCircle, LogOut } from 'lucide-react';
+import { Truck, Flame, X, Package, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { notifyNewOrder } from '../services/notifications';
 import { initializePaystack } from '../services/payment';
@@ -242,28 +242,7 @@ const Home = () => {
     };
 
     return (
-        <div className="home-container">
-            <header className="glass">
-                <div className="container header-content">
-                    <div className="logo cursor-pointer" onClick={() => navigate('/home')}>
-                        <span>FLASH DELIVERIES</span>
-                    </div>
-                    <div className="header-actions">
-                        <button className="btn btn-ghost sm" onClick={() => navigate('/orders')} title="My Orders">
-                            <Clock size={20} />
-                        </button>
-                        <a href="tel:0557138306" className="btn btn-ghost sm" title="Call Hotline">
-                            <Phone size={20} />
-                        </a>
-                        <a href="https://wa.me/233557138306" className="btn btn-ghost sm" title="WhatsApp Us">
-                            <MessageCircle size={20} />
-                        </a>
-                        <button className="btn btn-ghost sm" onClick={() => auth.signOut()} title="Logout">
-                            <LogOut size={20} />
-                        </button>
-                    </div>
-                </div>
-            </header>
+        <div className="home-container" style={{ paddingTop: '1rem', minHeight: '100dvh' }}>
 
             <main className="container main-content">
                 <div className="services-grid">
@@ -283,72 +262,29 @@ const Home = () => {
                     <motion.div
                         whileHover={{ scale: 1.02 }}
                         className="service-card glass"
-                        onClick={() => setActiveTab('delivery')}
+                        onClick={() => {
+                            setActiveTab('delivery');
+                            setDeliverySubtype('package');
+                        }}
                     >
                         <div className="service-icon delivery-icon">
                             <Truck size={32} />
                         </div>
                         <h2>Pick Up & Delivery</h2>
                         <p>Send packages or order food. Fast and reliable.</p>
-                        <button className="btn btn-primary" onClick={() => setActiveTab('delivery')}>Select Service</button>
+                        <button 
+                            className="btn btn-primary" 
+                            onClick={() => {
+                                setActiveTab('delivery');
+                                setDeliverySubtype('package');
+                            }}
+                        >
+                            Select Service
+                        </button>
                     </motion.div>
                 </div>
 
-                <AnimatePresence>
-                    {activeTab === 'delivery' && !deliverySubtype && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="selection-overlay"
-                        >
-                            <div className="selection-blurred-bg" style={{ backgroundImage: 'url(/hero-img.png)' }} />
-                            <div className="selection-content">
-                                <button className="close-selection-btn" onClick={() => setActiveTab(null)}><X size={32} /></button>
-                                <motion.h1 
-                                    initial={{ y: -20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    className="selection-title"
-                                >
-                                    Choose Delivery Type
-                                </motion.h1>
-                                <div className="selection-grid">
-                                    <motion.div 
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="selection-card"
-                                        onClick={() => setDeliverySubtype('package')}
-                                    >
-                                        <div className="selection-card-icon-wrap package">
-                                            <Package size={48} />
-                                        </div>
-                                        <div className="selection-card-info">
-                                            <h3>Package Delivery</h3>
-                                            <p>Send or receive items across the city</p>
-                                        </div>
-                                    </motion.div>
-                                    <motion.div 
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="selection-card"
-                                        onClick={() => setDeliverySubtype('food')}
-                                    >
-                                        <div className="selection-card-icon-wrap food">
-                                            <div className="icon-group">
-                                                <Zap size={24} className="badge-icon" />
-                                                <Truck size={48} />
-                                            </div>
-                                        </div>
-                                        <div className="selection-card-info">
-                                            <h3>Food Delivery</h3>
-                                            <p>Hot, fresh meals from your favorites</p>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+
 
                 <AnimatePresence>
                     {( (activeTab === 'gas') || (activeTab === 'delivery' && deliverySubtype) ) && (
@@ -378,6 +314,29 @@ const Home = () => {
 
                                 <div className="order-form-container scrollable">
                                     <form onSubmit={handleSubmitOrder}>
+                                        {activeTab === 'delivery' && (
+                                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                                <label>Service Category</label>
+                                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                                    <button 
+                                                        type="button"
+                                                        className={`btn btn-outline sm ${deliverySubtype === 'package' ? 'active' : ''}`}
+                                                        style={{ flex: 1, height: '40px', background: deliverySubtype === 'package' ? 'var(--primary)' : 'transparent', color: deliverySubtype === 'package' ? 'white' : 'var(--primary)', borderColor: 'var(--primary)' }}
+                                                        onClick={() => setDeliverySubtype('package')}
+                                                    >
+                                                        <Package size={16} /> Package
+                                                    </button>
+                                                    <button 
+                                                        type="button"
+                                                        className={`btn btn-outline sm ${deliverySubtype === 'food' ? 'active' : ''}`}
+                                                        style={{ flex: 1, height: '40px', background: deliverySubtype === 'food' ? 'var(--primary)' : 'transparent', color: deliverySubtype === 'food' ? 'white' : 'var(--primary)', borderColor: 'var(--primary)' }}
+                                                        onClick={() => setDeliverySubtype('food')}
+                                                    >
+                                                        <Truck size={16} /> Food
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                         <div className="form-group-row">
                                             <div className="form-group">
                                                 <label>Phone Number</label>

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Mail, Zap, ArrowLeft, Loader2, CheckCircle, Phone, Smartphone } from 'lucide-react';
+import { Mail, User as UserIcon, Lock, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { sendPasswordResetNotification, sendPasswordResetSMS, sendPasswordResetPushNotification } from '../services/notifications';
 
@@ -69,10 +69,6 @@ const ForgotPassword = () => {
                 className="admin-login-card glass"
             >
                 <div className="login-header">
-                    <div className="logo cursor-pointer" onClick={() => navigate('/')} style={{ justifyContent: 'center', marginBottom: '1rem' }}>
-                        <Zap className="text-primary" fill="currentColor" size={32} />
-                        <span style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>FLASH DELIVERY</span>
-                    </div>
                     <h1>Reset Password</h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>We'll send you a reset link to your Gmail.</p>
                 </div>

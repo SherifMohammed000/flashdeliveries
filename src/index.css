@@ -21,13 +21,26 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* Aggressively hide scrollbars globally while keeping natural scrolling */
+* {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, etc. */
+    width: 0 !important;
+    height: 0 !important;
+}
 html, body {
-  height: 100dvh;
+  min-height: 100dvh;
   width: 100vw;
-  overflow: hidden;
-  position: fixed;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -39,9 +52,10 @@ body {
 }
 
 #root, #app-root-container {
-  height: 100%;
+  min-height: 100dvh;
   width: 100%;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-main-content {

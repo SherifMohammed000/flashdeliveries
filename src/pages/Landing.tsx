@@ -93,10 +93,9 @@ const Landing = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                             className="hero-text"
-                            style={{ textAlign: 'center' }}
                         >
-                            <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Fastest Deliveries <span className="text-primary">In Flash.</span></h1>
-                            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', marginInline: 'auto' }}>Gas refill or package delivery across the city in record time.</p>
+                            <h1 className="hero-h1">Fastest Deliveries <span className="text-primary">In Flash.</span></h1>
+                            <p className="hero-p">Gas refill or package delivery across the city in record time.</p>
 
                             <div className="hero-actions" style={{ justifyContent: 'center', gap: '0.5rem' }}>
                                 <button className="btn btn-primary lg" onClick={() => navigate('/home')}>
@@ -118,9 +117,8 @@ const Landing = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.8 }}
                             className="hero-image"
-                            style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}
                         >
-                            <img src="/hero-img.png" alt="Flash Delivery Hero" className="floating" style={{ maxWidth: '200px' }} />
+                            <img src="/hero-img.png" alt="Flash Delivery Hero" className="floating hero-img" />
                         </motion.div>
                     </div>
                 </section>
