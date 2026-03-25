@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
-import { collection, query, where, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { Zap, Clock, Package, XCircle, LogOut, User as UserIcon, Loader2, ArrowLeft, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RatingSystem from '../components/RatingSystem';

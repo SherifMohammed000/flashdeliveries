@@ -146,65 +146,67 @@ const Tracking = () => {
                         </div>
                     )}
 
-                    {showDetails && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="status-card glass"
-                        >
-                            <div className="status-header">
-                                <div className="order-id">
-                                    <Package size={20} />
-                                    <span>Order Details</span>
-                                </div>
-                                <div className="status-badge" style={{ backgroundColor: getStatusColor(order.status) }}>
-                                    {order.status}
-                                </div>
-                            </div>
-
-                            <div className="tracking-steps">
-                                <div className="tracking-point">
-                                    <div className="point-icon pickup"><MapPin size={16} /></div>
-                                    <div className="point-info">
-                                        <label>Pickup</label>
-                                        <p>{order.location}</p>
+                    <AnimatePresence>
+                        {showDetails && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="status-card glass"
+                            >
+                                <div className="status-header">
+                                    <div className="order-id">
+                                        <Package size={20} />
+                                        <span>Order Details</span>
+                                    </div>
+                                    <div className="status-badge" style={{ backgroundColor: getStatusColor(order.status) }}>
+                                        {order.status}
                                     </div>
                                 </div>
-                                <div className="tracking-line"></div>
-                                <div className="tracking-point">
-                                    <div className="point-icon destination"><Truck size={16} /></div>
-                                    <div className="point-info">
-                                        <label>Destination</label>
-                                        <p>{order.destination}</p>
+
+                                <div className="tracking-steps">
+                                    <div className="tracking-point">
+                                        <div className="point-icon pickup"><MapPin size={16} /></div>
+                                        <div className="point-info">
+                                            <label>Pickup</label>
+                                            <p>{order.location}</p>
+                                        </div>
+                                    </div>
+                                    <div className="tracking-line"></div>
+                                    <div className="tracking-point">
+                                        <div className="point-icon destination"><Truck size={16} /></div>
+                                        <div className="point-info">
+                                            <label>Destination</label>
+                                            <p>{order.destination}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {order.rating && (
-                                <div className="customer-feedback-view">
-                                    <div className="divider" />
-                                    <label>Your Feedback</label>
-                                    <div className="stars-view">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} size={14} fill={i < order.rating ? '#f59e0b' : 'none'} color={i < order.rating ? '#f59e0b' : '#cbd5e1'} />
-                                        ))}
+                                {order.rating && (
+                                    <div className="customer-feedback-view">
+                                        <div className="divider" />
+                                        <label>Your Feedback</label>
+                                        <div className="stars-view">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star key={i} size={14} fill={i < order.rating ? '#f59e0b' : 'none'} color={i < order.rating ? '#f59e0b' : '#cbd5e1'} />
+                                            ))}
+                                        </div>
+                                        {order.customerComment && <p className="comment-preview">"{order.customerComment}"</p>}
                                     </div>
-                                    {order.customerComment && <p className="comment-preview">"{order.customerComment}"</p>}
-                                </div>
-                            )}
+                                )}
 
-                            <div className="order-summary-footer">
-                                <div className="total-price">
-                                    <span>Total Value:</span>
-                                    <strong>GHS {order.total || 0}</strong>
+                                <div className="order-summary-footer">
+                                    <div className="total-price">
+                                        <span>Total Value:</span>
+                                        <strong>GHS {order.total || 0}</strong>
+                                    </div>
+                                    <button className="btn btn-outline sm" onClick={() => setShowDetails(false)}>
+                                        Hide Info
+                                    </button>
                                 </div>
-                                <button className="btn btn-outline sm" onClick={() => setShowDetails(false)}>
-                                    Hide Info
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
             </main>
